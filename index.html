@@ -3,7 +3,7 @@
 <title>A világok változása I. – A kezdet | Online olvasás</title>
 <style>
 :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#e8eef7;background:#0b1423}*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(120deg,#101e33,#1b2d45);border-bottom:1px solid #3c5675;padding:14px 18px}h1{font-family:Georgia,serif;font-size:clamp(19px,3vw,28px);margin:3px 0 5px;text-align:center;letter-spacing:.04em}header p{text-align:center;color:#bbccde;font-size:13px;margin:0}.toolbar{display:flex;justify-content:center;flex-wrap:wrap;align-items:center;gap:9px;padding:11px;background:#15243a}button,select{border:1px solid #526e8e;background:#223854;color:#fff;border-radius:8px;padding:10px 13px;font-size:14px;cursor:pointer}button:hover{background:#315377}button:focus-visible,select:focus-visible{outline:3px solid #88c9ff}label{font-size:13px;color:#d3e1ef}.reader-wrap{max-width:1100px;margin:0 auto;padding:12px}.reader{background:#f7f2e7;color:#26211c;border-radius:10px;min-height:400px;box-shadow:0 8px 35px #0005;overflow:hidden}#viewer{height:min(72vh,780px);min-height:390px}#status{text-align:center;font-size:13px;color:#bfd1e4;padding:7px 15px;min-height:34px}.nav{display:flex;align-items:center;justify-content:center;gap:18px;padding:12px}.nav button{min-width:125px}.note{font-size:12px;text-align:center;color:#9db4cf;margin:8px 15px 18px}#tocPanel{max-width:780px;margin:0 auto 12px;padding:12px;background:#182a42;border:1px solid #476281;border-radius:10px}#tocPanel[hidden]{display:none}#toc{max-height:250px;overflow:auto;display:grid;gap:4px}#toc button{text-align:left;background:transparent;border:0;border-bottom:1px solid #314860;border-radius:0;padding:9px}#error{color:#ffd7ba;text-align:center;padding:14px}body.night .reader{background:#141b27;color:#e9e9e9}body.sepia .reader{background:#f2e6cf;color:#332a1e}@media(max-width:600px){header{padding:12px}.toolbar{gap:6px;padding:8px}.toolbar button,.toolbar select{padding:9px;font-size:13px}.reader-wrap{padding:5px}#viewer{height:70vh;min-height:360px}.nav{gap:8px}.nav button{min-width:110px}}
-/* Beágyazott mobilnézet: a kezelőszervek a kereten belül maradnak. */
+/* Mobil lapozós olvasó: az EPUB változatlan, a nézet alkalmazkodik. */
 html,body{width:100%;min-width:0}
 @media(max-width:650px){
  html,body{height:100%;height:100dvh;overflow:hidden}
@@ -16,14 +16,23 @@ html,body{width:100%;min-width:0}
  .toolbar label{display:none}
  #tocToggle{max-width:43vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
  #tocPanel{position:absolute;z-index:10;top:92px;left:5px;right:5px;max-height:55%;overflow:auto;margin:0;box-shadow:0 10px 30px #0009}
- .reader-wrap{flex:1;min-height:0;width:100%;padding:4px 5px 0;display:flex;flex-direction:column;overflow:hidden}
+ .reader-wrap{flex:1;min-height:0;width:100%;padding:3px 4px 0;display:flex;flex-direction:column;overflow:hidden}
  .reader{flex:1;min-height:0;box-shadow:none;border-radius:6px}
  #viewer{height:100%;min-height:0}
  #status{flex:none;min-height:0;padding:3px 4px;font-size:11px}
  #error{flex:none;padding:5px;font-size:12px}
  .nav{flex:none;padding:4px 0 6px;gap:7px}
- .nav button{min-width:0;flex:1;max-width:145px;padding:8px;font-size:12px}
+ .nav button{min-width:0;flex:1;max-width:145px;padding:9px;font-size:12px;touch-action:manipulation}
  .note{display:none}
+}
+/* A nagyobb olvasóablakot a Google Sites keret magasságának növelésével kapjuk meg. */
+@media(max-width:650px) and (max-height:480px){
+ header{padding:3px 5px} h1{font-size:14px} header p{font-size:9px}
+ .toolbar{padding:3px 2px} .toolbar button,.toolbar select{padding:5px 5px;font-size:10px}
+ #status{padding:2px;font-size:10px} .nav{padding:3px 0 4px}
+}
+@media(max-width:650px) and (min-height:650px){
+ header{padding:9px 8px} .reader-wrap{padding:6px 7px 0}
 }
 </style></head><body>
 <header><h1>A VILÁGOK VÁLTOZÁSA</h1><p>I. – A KEZDET · Tatár Gábor · Online könyvolvasó</p></header>
@@ -41,9 +50,9 @@ const storage={getItem(k){try{return window.localStorage.getItem(k)}catch(e){ret
 if(!window.ePub){$('error').hidden=false;$('error').textContent='Nem sikerült betölteni az olvasóprogramot. Ellenőrizd az internetkapcsolatot, majd frissítsd az oldalt.';status.textContent='';return;}
 const book=ePub('konyv.epub',{openAs:'epub'});
 const rendition=book.renderTo('viewer',{width:'100%',height:'100%',flow:'paginated',spread:'none'});
-let font=Math.max(80,Math.min(180,Number(storage.getItem(key+'font'))||100));
+let font=Math.max(85,Math.min(180,Number(storage.getItem(key+'font'))|| (window.innerWidth<=650?115:100)));
 let theme=storage.getItem(key+'theme')||'light';if(!['light','sepia','night'].includes(theme))theme='light';$('theme').value=theme;
-function apply(){document.body.classList.remove('night','sepia');if(theme!=='light')document.body.classList.add(theme);const dark=theme==='night',sep=theme==='sepia';rendition.themes.default({body:{color:dark?'#e9edf5':sep?'#342b1e':'#28221e',background:dark?'#141b27':sep?'#f2e6cf':'#f7f2e7','line-height':'1.55'},'a':{color:dark?'#91c5ff':'#315f9b'}});rendition.themes.fontSize(font+'%');}
+function apply(){document.body.classList.remove('night','sepia');if(theme!=='light')document.body.classList.add(theme);const dark=theme==='night',sep=theme==='sepia';rendition.themes.default({body:{color:dark?'#e9edf5':sep?'#342b1e':'#28221e',background:dark?'#141b27':sep?'#f2e6cf':'#f7f2e7','line-height':window.innerWidth<=650?'1.48':'1.55'},'a':{color:dark?'#91c5ff':'#315f9b'}});rendition.themes.fontSize(font+'%');}
 apply();
 $('prev').onclick=()=>rendition.prev();$('next').onclick=()=>rendition.next();
 $('smaller').onclick=()=>{font=Math.max(80,font-10);storage.setItem(key+'font',font);apply()};
@@ -53,7 +62,7 @@ $('tocToggle').onclick=()=>{const p=$('tocPanel');p.hidden=!p.hidden;$('tocToggl
 rendition.on('relocated',loc=>{if(loc?.start?.cfi){try{storage.setItem(key+'cfi',loc.start.cfi)}catch(e){}let progress='';try{if(book.locations.length())progress=' · '+Math.round(book.locations.percentageFromCfi(loc.start.cfi)*100)+'%'}catch(e){}status.textContent='Olvasás folyamatban'+progress;}});
 book.ready.then(async()=>{const nav=await book.loaded.navigation;function add(items,level){items.forEach(item=>{const b=document.createElement('button');b.textContent='　'.repeat(Math.min(level,3))+item.label.trim();b.onclick=()=>{rendition.display(item.href);$('tocPanel').hidden=true;$('tocToggle').setAttribute('aria-expanded','false')};$('toc').appendChild(b);if(item.subitems?.length)add(item.subitems,level+1)})}add(nav.toc,0);const saved=storage.getItem(key+'cfi');try{await rendition.display(saved||undefined)}catch(e){await rendition.display()}book.locations.generate(1200).catch(()=>{});if(!status.textContent.includes('Olvasás folyamatban'))status.textContent='Kellemes olvasást!';}).catch(err=>{status.textContent='';$('error').hidden=false;$('error').textContent='A könyv nem tölthető be. Ellenőrizd, hogy a konyv.epub fájl is fel lett-e töltve ugyanabba a mappába, majd frissítsd az oldalt.';console.error(err)});
 let resizeTimer;
-window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{try{rendition.resize()}catch(e){}},120)});
+window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{try{rendition.resize()}catch(e){}},220)});
 document.addEventListener('keydown',e=>{if(e.target.matches('input,select,textarea'))return;if(e.key==='ArrowRight')rendition.next();if(e.key==='ArrowLeft')rendition.prev()});
 })();
 </script></body></html>
